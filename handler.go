@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/hekmon/plexhue/huecolors"
 	"github.com/hekmon/plexwebhooks"
 )
 
@@ -49,6 +50,12 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("%+v\n", *payload)
 		if thumb != nil {
 			fmt.Printf("Filename: %s | Size: %d\n", thumb.Filename, len(thumb.Data))
+			colors, err := huecolors.GetHueColors(3, thumb.Data)
+			if err == nil {
+				fmt.Println(colors)
+			} else {
+				fmt.Println(err)
+			}
 		}
 	} else {
 		fmt.Println(err)
