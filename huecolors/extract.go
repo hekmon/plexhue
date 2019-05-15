@@ -28,7 +28,7 @@ type CIExyY struct {
 }
 
 // GetHueColors returns the x (nbColors) main colors from imgData (jpg or png)
-func GetHueColors(nbColors int, imgData []byte) (colors []CIExyY, err error) {
+func GetHueColors(nbColors int, imgData []byte) (colors []CIExyY, params string, err error) {
 	// Decode data as image
 	img, _, err := image.Decode(bytes.NewBuffer(imgData))
 	if err != nil {
@@ -38,20 +38,21 @@ func GetHueColors(nbColors int, imgData []byte) (colors []CIExyY, err error) {
 	// Create each set
 	var RGBcolors []prominentcolor.ColorItem
 	possibilities := make(ColorSets, len(prominentcolorsParams))
-	for index, params := range prominentcolorsParams {
+	for index, param := range prominentcolorsParams {
 		// Extract main colors with current params
-		RGBcolors, err = prominentcolor.KmeansWithAll(nbColors, img, params,
+		RGBcolors, err = prominentcolor.KmeansWithAll(nbColors, img, param,
 			prominentcolor.DefaultSize, prominentcolor.GetDefaultMasks())
 		if err != nil {
-			err = fmt.Errorf("prominent colors extraction failed with params '%s': %v", genPColorParamsString(params), err)
+			err = fmt.Errorf("prominent colors extraction failed with params '%s': %v", genPColorParamsString(param), err)
 			return
 		}
 		// Add them to the list
-		possibilities[index] = NewColorSet(RGBcolors, params)
+		possibilities[index] = NewColorSet(RGBcolors, param)
 	}
 	// Get the set with the most differents colors
 	sort.Sort(sort.Reverse(possibilities))
 	// Build the answer
+	params = possibilities[0].GetPColorParamsString()
 	colors = make([]CIExyY, nbColors)
 	for index, color := range possibilities[0].GetColorfullSet() {
 		colors[index].X, colors[index].Y, colors[index].Luminance = color.Xyy()
