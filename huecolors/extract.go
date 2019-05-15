@@ -52,7 +52,7 @@ func GetHueColors(nbColors int, imgData []byte) (colors []CIExyY, err error) {
 	// Get the set with the most differents colors
 	sort.Sort(sort.Reverse(possibilities))
 	// Build the answer
-	colors = make([]CIExyY, len(possibilities))
+	colors = make([]CIExyY, nbColors)
 	for index, color := range possibilities[0].GetColorfullSet() {
 		colors[index].X, colors[index].Y, colors[index].Luminance = color.Xyy()
 	}
