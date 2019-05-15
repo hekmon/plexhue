@@ -50,8 +50,9 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("%+v\n", *payload)
 		if thumb != nil {
 			fmt.Printf("Filename: %s | Size: %d\n", thumb.Filename, len(thumb.Data))
-			colors, err := huecolors.GetHueColors(3, thumb.Data)
+			colors, params, err := huecolors.GetHueColors(3, thumb.Data)
 			if err == nil {
+				fmt.Println(params)
 				fmt.Println(colors)
 			} else {
 				fmt.Println(err)
